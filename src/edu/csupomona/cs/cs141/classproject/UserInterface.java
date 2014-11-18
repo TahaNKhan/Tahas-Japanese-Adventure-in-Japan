@@ -19,7 +19,9 @@ public class UserInterface {
 	
 	Taha tahaPlayer = new Taha();
 		
-	GameEngine gameEng = new GameEngine(tahaPlayer);
+	GameEngine GMENG;
+	
+	Grid GRID;
 	
 	public UserInterface(){
 
@@ -30,7 +32,8 @@ public class UserInterface {
 	public int FirstMenu(){
 		int userChoice = 0;
 		Taha tahaPlayer = new Taha();
-		GameEngine gameEng = new GameEngine(tahaPlayer);
+		GMENG = new GameEngine();
+		
 		
 		Scanner kb = new Scanner(System.in);
 		System.out.println("Welcome to Taha's Adventure!\n");
@@ -72,7 +75,7 @@ public class UserInterface {
 
 	public void theGameInterface(){
 		
-		gameEng.printGrid();
+		GMENG.printGrid();
 		String playerChoice = "Q";
 		while(playerChoice != "A" || playerChoice != "W" || playerChoice != "S" || playerChoice != "D" || playerChoice != "0"){
 		
@@ -80,7 +83,7 @@ public class UserInterface {
 			try{
 				playerChoice = kb.next();
 				kb.nextLine();
-				tahaPlayer.move(playerChoice.toLowerCase(), gameEng);
+				tahaPlayer.move(playerChoice.toLowerCase(), GRID,GMENG);
 			} catch(InputMismatchException e){
 				System.out.println("Please enter correct input.");
 				kb.next();

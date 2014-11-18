@@ -10,6 +10,7 @@ package edu.csupomona.cs.cs141.classproject;
  
  //Ultimately, we should move the move method into the game engine
  //For now I'm adding in attributes that the player should have
+ //leave your name here so I know who's doing what lol -Taha
  
 public class Taha extends Entity implements GridMember{
 	
@@ -39,7 +40,7 @@ public class Taha extends Entity implements GridMember{
 		lives--;    // that places the player at spawn should be called
 	}
 	
-	public void move(String direction, GameEngine grid){ //going to move this to the GameEngine
+	public void move(String direction, Grid grid, GameEngine GMENG){ //going to move this to the GameEngine
 		int[] playerPosition = grid.getPlayerPostion();
 		int row = playerPosition[0];
 		int col = playerPosition[1];
@@ -47,19 +48,19 @@ public class Taha extends Entity implements GridMember{
 		
 		case "w":
 			playerDirection = 1;
-			grid.movePlayer(row-1, col);
+			GMENG.movePlayer(row-1, col);
 			break;
 		case "d":
 			playerDirection = 2;
-			grid.movePlayer(row, col+1);
+			GMENG.movePlayer(row, col+1);
 			break;
 		case "s":
 			playerDirection = 3;
-			grid.movePlayer(row+1, col);
+			GMENG.movePlayer(row+1, col);
 			break;
 		case "a":
 			playerDirection = 4;
-			grid.movePlayer(row, col-1);
+			GMENG.movePlayer(row, col-1);
 			break;
 		}
 		
