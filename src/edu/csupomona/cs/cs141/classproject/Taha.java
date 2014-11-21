@@ -1,61 +1,71 @@
-/**
- * 
- */
-package edu.csupomona.cs.cs141.classproject;
 
-/**
- * @author Isa
- *
- */
-public class Taha extends Entity implements GridMember{
+public class Taha extends Entity implements GridMember {
+
+	private int lives;
+
+	private int ammo;
+
+	private int cantDieDuration;
 	
 	private int playerDirection;
 	
-	public Taha(){
+	
+	public Taha() {
+		lives = 3;
+		ammo = 1;
 		playerDirection = 1;
 	}
-	
-	public void move(String direction, GameEngine grid){
-		int[] playerPosition = grid.getPlayerPostion();
-		int row = playerPosition[0];
-		int col = playerPosition[1];
-		switch(direction){
-		
-		case "w":
-			playerDirection = 1;
-			grid.movePlayer(row-1, col);
-			break;
-		case "d":
-			playerDirection = 2;
-			grid.movePlayer(row, col+1);
-			break;
-		case "s":
-			playerDirection = 3;
-			grid.movePlayer(row+1, col);
-			break;
-		case "a":
-			playerDirection = 4;
-			grid.movePlayer(row, col-1);
-			break;
-		default:
-			System.exit(0);
-		}
-		
-		
+
+	public int showLives() {
+		return lives;
+	}
+
+	public int showAmmo() {
+		return ammo;
 	}
 	
-	public int getPlayerDirection(){
-		return playerDirection;
+	public int showCantDieTime(){
+		return cantDieDuration;
 	}
 	
-	public String toString(){
+	public void cantDieCheck(){
+		cantDieDuration--;
+	}
+
+	public void shoot() {
+		ammo--;
+	}
+
+	public void dies() { 						
+		lives--; 
+	}
+	
+	public void addAmmo(){
+		ammo++;
+	}
+	
+	public void isWalkingOnSunshine(){
+		cantDieDuration = 5;
+	}
+
+
+	public String toString() {
 		String result = "[P]";
 		return result;
 	}
+
 	
-	public boolean isSeen(){
+	public boolean isSeen() {
 		return true;
 	}
 	
+	public void setPlayerDirection(int direction) {
+		playerDirection = direction;
+	}
 	
+	public int getPlayerDirection() {
+		return playerDirection;
+	}
+
+
 }

@@ -1,106 +1,96 @@
-/**
- * 
- */
-package edu.csupomona.cs.cs141.classproject;
-
-import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.InputMismatchException;
 
-/**
- * @author Isa
- *
- */
+
 public class UserInterface {
-
 	
-	private GridMember[][] gridCells;
+	private Taha player = new Taha();
 	
-	public UserInterface(){
+	GameEngine gameEng = new GameEngine(player);
 
-//		gridCells = grid.printGrid();
-
-	}
+	Scanner kb = new Scanner(System.in);
 	
-	public int FirstMenu(){
-		int userChoice = 0;
-		Taha tahaPlayer = new Taha();
-		GameEngine gameEng = new GameEngine(tahaPlayer);
-		
-		Scanner kb = new Scanner(System.in);
-		System.out.println("Welcome to Taha's Adventure!\n");
-		System.out.println("1. Start Game");
-		System.out.println("2. Load Game");
-		System.out.println("3. About");
-		System.out.println("4. Help");
-		System.out.println("5. Quit");
-		
-		try{
-			while(userChoice != 1 && userChoice !=2 && userChoice != 3 && userChoice != 4 && userChoice != 5){
-				userChoice = kb.nextInt();
-				kb.nextLine();
-				
-				
-				
-			}
-		} catch(InputMismatchException e){
-			System.out.println("Bad Input, Try again");
-		}
-		return userChoice;
-	}
 	
-
-	public void FirstMenuRedirection(int userChoice) {
-		// TODO Auto-generated method stub
-		if(userChoice == 1){
-			theGameInterface();	
-		}
-		if(userChoice == 2){
-//			 load game stuff here	
-		}
-		if(userChoice == 3){
-//			About stuff here
-		}
-		if(userChoice == 4){
-//			how to play the game stuff here
-		}
-		if(userChoice == 5){
-			System.exit(0);
-		}
-	}
-
-	public void theGameInterface(){
-		Scanner kb = new Scanner(System.in);
-		Taha tahaPlayer = new Taha();
-		UserInterface UI = new UserInterface();
-		
-		GameEngine gameEng = new GameEngine(tahaPlayer);
+	
+	public void options(){
+		int shootMove = 9;
+		while(shootMove != 0){
+		gameEng.callGridSeeReset();
+		gameEng.callGridSeeAround();
 		gameEng.printGrid();
-		String playerChoice = "Q";
-		while(playerChoice != "A" || playerChoice != "W" || playerChoice != "S" || playerChoice != "D" || playerChoice != "0"){
+		gameEng.gameOverCheck();
+		doIWinYet();
+		doYouWannaSee();
+		System.out.println("1 Shoot 2 Move");
+		playerStatus();
+		gameEng.playerTurnUsedWhileInvincible();
+		shootMove = kb.nextInt();
+		if (shootMove == 1){
+			if(gameEng.ammoCheck()){
+				playerShoot();
+			}
+			else{
+				System.out.println("You are out of ammo.");
+			}
+		}
+		else{
+			theGameInterface();
+		}
+		}
+	}
+	
+	public void theGameInterface() {
 		
-			System.out.println("W. Up, D. Right, S. Down, A. Left, or 0 to quit.");
-			try{
+		String playerChoice = "Q";
+		
+			System.out
+					.println("W. Up, D. Right, S. Down, A. Left, or 0 to quit.");
+			try {
 				playerChoice = kb.next();
 				kb.nextLine();
-				tahaPlayer.move(playerChoice.toLowerCase(), gameEng);
-			} catch(InputMismatchException e){
+					gameEng.move(playerChoice.toLowerCase());
+				
+			} catch (InputMismatchException e) {
 				System.out.println("Please enter correct input.");
 				kb.next();
 			}
 		}
+	
+	public void playerShoot(){
+		System.out.println("Which direction to shoot? 1 up 2 left 3 down 4 right");
+		int shootChoice = kb.nextInt();
+		gameEng.shootDirection(shootChoice);
 	}
 	
-
-//  Isaac, this method is also in the engine, do we need it here?	
-// 
-//	public void printGrid(){
-//		for(int i = 0; i < gridCells.length; i++){
-//			for(int j = 0; j < gridCells[i].length; j++){
-//				System.out.print(gridCells[i][j].toString());
-//			}
-//			System.out.println();
-//		}
-//		System.out.println();
-//	}
+	public void playerStatus(){
+		System.out.println("Lives: " + gameEng.lives()+ " Ammo: "+ gameEng.ammo());
+		System.out.println("Turns invincible: "+ gameEng.cantDie() );
+	}
 	
+	public void doIWinYet(){
+		if(gameEng.recieveWinFromGrid()){
+			System.out.println("You have won the game");
+			System.exit(0);
+		}
+	}
+	
+	public void doYouWannaSee(){
+		int lookFurther = 0;
+		System.out.println("Do you want to look further in a direction? 1 yes 2 no");
+		lookFurther = kb.nextInt();
+		if(lookFurther == 1){
+			wantedToSee();
+		}
+		else{
+			System.out.println("Guess you wanna be blind");
+		}
+	}
+	
+	public void wantedToSee(){
+		int lookDirection = 0;
+		System.out.println("Which direction do you wanna look at?");
+		System.out.println("1 up, 2 right, 3 down, 4 left" );
+		lookDirection = kb.nextInt();
+		gameEng.playerLook(lookDirection);
+	}
 }

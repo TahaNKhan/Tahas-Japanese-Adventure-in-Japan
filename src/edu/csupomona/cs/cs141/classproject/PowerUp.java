@@ -1,31 +1,33 @@
-/**
- * 
- */
-package edu.csupomona.cs.cs141.classproject;
 
-/**
- * @author Isa
- *
- */
-public abstract class PowerUp implements GridMember{
-	
+public abstract class PowerUp implements GridMember {
+
 	private boolean seen;
 	
-	public boolean isSeen(){
+	private boolean isUsed;
+
+	public boolean isSeen() {
 		return seen;
 	}
-	
-	public void see(){
+
+	public void see() {
 		seen = true;
 	}
-	
-	public boolean isSomething(){
+
+	public boolean isSomething() {
 		return true;
 	}
-	
-	
-	public void resetSee(){
+
+	public void resetSee() {
 		seen = false;
 	}
 	
+	public void powerGain(){
+		isUsed = true;
+	}
+	
+	public boolean isUsed(){
+		return isUsed;
+	}
+	
+
 }

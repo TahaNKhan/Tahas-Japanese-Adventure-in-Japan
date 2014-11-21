@@ -1,55 +1,51 @@
-/**
- * 
- */
-package edu.csupomona.cs.cs141.classproject;
+public class Room implements GridMember {
 
-/**
- * @author Isa
- *
- */
-public class Room implements GridMember{
-	
 	private boolean briefcase;
 	
-	public boolean isDoor(int playerDirection){
+	public boolean isDoor(int playerDirection) {
 		boolean result;
-		if(playerDirection == 3){
+		if (playerDirection == 3) {
 			result = true;
-		}else{
+		} else {
 			result = false;
 		}
 		return result;
 	}
-	
-	public void giveBriefcase(){
+
+	public void giveBriefcase() {
 		briefcase = true;
 	}
 	
-	public boolean hasBriefcase(){
+
+	public boolean hasBriefcase() {
 		return briefcase;
 	}
+
 	
-	public String toString(){
-		
-		String result = "[R]";
-		return result;
-		
+	public String toString() {
+	
+			String result = "[R]";
+			return result;
 	}
 	
-	public void resetSee(){
-		
-	}
 	
-	public boolean isSomething(){
+	public void resetSee() {
+
+	}
+
+	
+	public boolean isSomething() {
 		return true;
 	}
+
 	
-	public boolean isSeen(){
+	public boolean isSeen() {
 		return true;
 	}
+
 	
-	public void see(){
-		
+	public void see() {
+
 	}
 
 }

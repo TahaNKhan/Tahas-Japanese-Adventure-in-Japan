@@ -1,43 +1,36 @@
-/**
- * 
- */
-package edu.csupomona.cs.cs141.classproject;
-
-/**
- * @author Isa
- *
- */
 public abstract class Entity implements GridMember {
-	
+
 	private boolean seen;
-	
+
 	private int[] position = new int[2];
-	
-	public boolean isSeen(){
+
+	@Override
+	public boolean isSeen() {
 		return seen;
 	}
-	
-	
-	public void setPosition(int row, int col){
+
+	public void setPosition(int row, int col) {
 		position[0] = row;
 		position[1] = col;
 	}
-	
-	public int[] getPosition(){
+
+	public int[] getPosition() {
 		return position;
 	}
-	
-	public void see(){
+
+	@Override
+	public void see() {
 		seen = true;
 	}
-	
-	public void resetSee(){
+
+	@Override
+	public void resetSee() {
 		seen = false;
 	}
-	
-	public boolean isSomething(){
+
+	@Override
+	public boolean isSomething() {
 		return true;
 	}
-	
-	
+
 }

@@ -1,5 +1,3 @@
-package edu.csupomona.cs.cs141.classproject;
-
 
 public class TrueRoom extends Room {
 

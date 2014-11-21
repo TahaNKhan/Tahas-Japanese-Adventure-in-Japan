@@ -1,5 +1,3 @@
-package edu.csupomona.cs.cs141.classproject;
-
 import java.util.Random;
 
 /**
@@ -14,7 +12,7 @@ public class Grid {
 	
 	private GridMember[][] grid;
 
-	private Ninja[] ninjas;
+	private Ninja[] ninjas = new Ninja[6];
 
 	private Taha thePlayer;
 
@@ -35,10 +33,11 @@ public class Grid {
 	private int[] bulletPosition = new int[2];
 
 	private int[] inviPosition = new int[2];
+	
+	private boolean win = false;
 
 	public Grid(Taha tahaPlayer) {
 
-		ninjas = new Ninja[6];
 		for (int x = 0; x < ninjas.length; x++) {
 			ninjas[x] = new Ninja();
 		}
@@ -71,6 +70,14 @@ public class Grid {
 
 		playerPosition[0] = 8;
 		playerPosition[1] = 0;
+	}
+	
+	public void resetSeeAll(){
+		for (int k = 0; k < grid.length; k++) {
+			for (int l = 0; l < grid[k].length; l++) {
+				grid[k][l].resetSee();
+			}
+		}
 	}
 
 	public void spawnRadar() {
@@ -182,18 +189,6 @@ public class Grid {
 		if (grid[row][col] instanceof EmptyMember) {
 			grid[row][col] = cantDie;
 		}
-	}
-
-	public int lives() {
-		return thePlayer.showLives();
-	}
-
-	public int ammo() {
-		return thePlayer.showAmmo();
-	}
-
-	public int cantDie() {
-		return thePlayer.showCantDieTime();
 	}
 
 	public void getPowerUp(int row, int col) {
@@ -343,6 +338,7 @@ public class Grid {
 					printGrid();
 					if (room.hasBriefcase()) {
 						System.out.println("has briefcase!");
+						youWon();
 					}
 					System.out.println("You can pick up the case!");
 				} else {
@@ -362,7 +358,6 @@ public class Grid {
 
 				moveNinjas(previousRow, previousCol);
 				playerSeeAround();
-				printGrid();
 				resetPlayerSeeAround();
 			} else {
 				playerPosition[0] = row;
@@ -373,7 +368,6 @@ public class Grid {
 
 				moveNinjas(previousRow, previousCol);
 				playerSeeAround();
-				printGrid();
 				resetPlayerSeeAround();
 			}
 		} catch (ArrayIndexOutOfBoundsException e) {
@@ -384,6 +378,14 @@ public class Grid {
 			System.out.println("You can't walk through walls!");
 		}
 
+	}
+	
+	public void youWon(){
+		win = true;
+	}
+	
+	public boolean showWin(){
+		return win;
 	}
 
 	public void resetPlayerSeeAround() {
@@ -436,10 +438,81 @@ public class Grid {
 		}
 
 	}
+	
+	public void look(int direction) {
+		int playerRow = -1;
+		int playerCol = -1;
+		int[] position = thePlayer.getPosition();
+		playerRow = position[0];
+		playerCol = position[1];
+		boolean ninjaAhead = false;
+		try {
+			switch (direction) {
+			case 1:
+				for (Ninja ninja : ninjas) {
+					int[] ninPosition = ninja.getPosition();
+					if (ninPosition[1] == playerCol) {
+						if (ninPosition[0] < playerRow) {
+							ninjaAhead = true;
+						}
+					}
+				}
+				grid[playerRow - 1][playerCol].see();
+				grid[playerRow - 2][playerCol].see();
+				break;
+			case 2:
+				for (Ninja ninja : ninjas) {
+					int[] ninPosition = ninja.getPosition();
+					if (ninPosition[0] == playerRow) {
+						if (ninPosition[1] > playerCol) {
+							ninjaAhead = true;
+						}
+					}
+				}
+				grid[playerRow][playerCol + 1].see();
+				grid[playerRow][playerCol + 2].see();
+				break;
+			case 3:
+				for (Ninja ninja : ninjas) {
+					int[] ninPosition = ninja.getPosition();
+					if (ninPosition[1] == playerCol) {
+						if (ninPosition[0] > playerRow) {
+							ninjaAhead = true;
+						}
+					}
+				}
+				grid[playerRow + 1][playerCol].see();
+				grid[playerRow + 2][playerCol].see();
+				break;
+			case 4:
+				for (Ninja ninja : ninjas) {
+					int[] ninPosition = ninja.getPosition();
+					if (ninPosition[0] == playerRow) {
+						if (ninPosition[1] < playerCol) {
+							ninjaAhead = true;
+						}
+					}
+				}
+				grid[playerRow][playerCol - 1].see();
+				grid[playerRow][playerCol - 2].see();
+				break;
+			}
+		} catch (ArrayIndexOutOfBoundsException e) {
+			// do nothing
+		} finally {
+			if (ninjaAhead) {
+				System.out.println("Ninja ahead!");
+			} else {
+				System.out.println("All clear.");
+			}
+			printGrid();
+		}
+	}
 
 	public void killCheck() {
 
 		for (Ninja currNinja : ninjas) {
+			if(!currNinja.totallyGotShot()){
 			int[] pp = thePlayer.getPosition();
 			int[] nc = currNinja.getPosition();
 			int row = pp[0];
@@ -468,6 +541,11 @@ public class Grid {
 				// Nothing happens here.
 			}
 		}
+			else{
+				// Nothing happens here if totallyGotShot is true.
+				
+			}
+		}
 	}
 
 
@@ -479,11 +557,18 @@ public class Grid {
 
 	public void moveNinjas(int row, int col) {
 		for (Ninja currNinja : ninjas) {
-			deathCheck();
 			int direction;
 			boolean hasMoved = false;
 			boolean tried = false;
+			boolean isDead = false;
 			do {
+				isDead = ifNinjaPlaceIsEmptyCell(currNinja);
+				
+				if (isDead){
+					hasMoved = true;
+					break;
+				}
+				deathCheck();
 				int[] ninCoord = currNinja.getPosition();
 				currNinja.setDirection(row, col);
 				direction = currNinja.getDirection();
@@ -570,7 +655,7 @@ public class Grid {
 					hasMoved = false;
 					currNinja.setPosition(ninCoord[0], ninCoord[1]);
 				}
-			} while (!hasMoved);
+			} while (!hasMoved && !isDead);
 		}
 	}
 
@@ -592,19 +677,19 @@ public class Grid {
 
 		case 1:
 			thePlayer.setPlayerDirection(1);
-			shoot(row, col + 1, direction);
+			shoot(row-1, col , direction);
 			break;
 		case 2:
 			thePlayer.setPlayerDirection(2);
-			shoot(row - 1, col, direction);
+			shoot(row, col-1, direction);
 			break;
 		case 3:
 			thePlayer.setPlayerDirection(3);
-			shoot(row, col - 1, direction);
+			shoot(row+1, col, direction);
 			break;
 		case 4:
 			thePlayer.setPlayerDirection(4);
-			shoot(row + 1, col, direction);
+			shoot(row, col+1, direction);
 			break;
 		}
 	}
@@ -613,69 +698,116 @@ public class Grid {
 		try {
 			switch (direction) {
 			case 1:
-				while (grid[row][col] instanceof EmptyMember
-						|| grid[row][col] instanceof PowerUp) {
+				while (!(grid[row][col] instanceof Room) || !(grid[row][col] instanceof Ninja)) {
 					if (grid[row][col] instanceof Room) {
-						System.out.println("You shot a wall of a room");
-						break;
+						System.out.println("You shot a wall of a room"); //Prints when you shoot a room
+						break;                                           //only here to check if this works
 					} else if (grid[row][col] instanceof Ninja) {
-						grid[row][col] = new EmptyMember();
-						break;
+						for (Ninja currNinja: ninjas){
+							int[] shotPosition = currNinja.getPosition();
+							if (grid[row][col] == grid[shotPosition[0]][shotPosition[1]]){
+								System.out.println("Totally got shot"); //Placed here to check if ninja got shot
+								currNinja.gotShot();                    //will remove later
+								grid[row][col] = null;
+								fixTheNull(row, col);
+								break;
+							}
+						}
 					} else {
-						col++;
+						
 					}
+					row--;
 				}
 
 			case 2:
-				while (grid[row][col] instanceof EmptyMember
-						|| grid[row][col] instanceof PowerUp) {
+				while (!(grid[row][col] instanceof Room) || !(grid[row][col] instanceof Ninja)) {
 					if (grid[row][col] instanceof Room) {
-						System.out.println("You shot a wall of a room");
-						break;
+						System.out.println("You shot a wall of a room"); //Prints when you shoot a room
+						break;                                           //only here to check if this works
 					} else if (grid[row][col] instanceof Ninja) {
-						grid[row][col] = new EmptyMember();
+						for (Ninja currNinja: ninjas){
+							int[] shotPosition = currNinja.getPosition();
+							if (grid[row][col] == grid[shotPosition[0]][shotPosition[1]]){
+								System.out.println("Totally got shot"); //Placed here to check if ninja got shot
+								currNinja.gotShot();                    //will remove later
+								grid[row][col] = null;
+								fixTheNull(row, col);
+								break;
+							}
+						}
 						break;
 					} else {
-						row--;
+				
 					}
+					col--;
 				}
 
 			case 3:
-				while (grid[row][col] instanceof EmptyMember
-						|| grid[row][col] instanceof PowerUp) {
+				while (!(grid[row][col] instanceof Room) || !(grid[row][col] instanceof Ninja)) {
 					if (grid[row][col] instanceof Room) {
-						System.out.println("You shot a wall of a room");
-						break;
+						System.out.println("You shot a wall of a room"); //Prints when you shoot a room
+						break;                                           //only here to check if this works
 					} else if (grid[row][col] instanceof Ninja) {
-						grid[row][col] = new EmptyMember();
+						for (Ninja currNinja: ninjas){
+							int[] shotPosition = currNinja.getPosition();
+							if (grid[row][col] == grid[shotPosition[0]][shotPosition[1]]){
+								System.out.println("Totally got shot"); //Placed here to check if ninja got shot
+								currNinja.gotShot();                    //will remove later
+								grid[row][col] = null;
+								fixTheNull(row, col);
+								break;
+							}
+						}
 						break;
 					} else {
-						col--;
+						
 					}
+					row++;
 				}
 			case 4:
-				while (grid[row][col] instanceof EmptyMember
-						|| grid[row][col] instanceof PowerUp) {
+				while (!(grid[row][col] instanceof Room) || !(grid[row][col] instanceof Ninja)) {
 					if (grid[row][col] instanceof Room) {
-						System.out.println("You shot a wall of a room");
-						break;
+						System.out.println("You shot a wall of a room"); //Prints when you shoot a room
+						break;                                           //only here to check if this works
 					} else if (grid[row][col] instanceof Ninja) {
-						grid[row][col] = new EmptyMember();
+						for (Ninja currNinja: ninjas){
+							int[] shotPosition = currNinja.getPosition();
+							if (grid[row][col] == grid[shotPosition[0]][shotPosition[1]]){
+								System.out.println("Totally got shot"); //Placed here to check if ninja got shot
+								currNinja.gotShot();                    //will remove later
+								grid[row][col] = null;
+								fixTheNull(row, col);
+								break;
+							}
+						}
 						break;
 					} else {
-						row++;
+						
 					}
+					col++;
 				}
 			}
 		} catch (ArrayIndexOutOfBoundsException e) {
-			System.out.println("You shot a wall");
-
-		} finally {
-			moveNinjas(row, col);
+			System.out.println("You shot a wall"); //This is here only to check if a bullet makes it all the way through
+                                                   //to the end of the world, if this prints along with a ninja getting shot
+		} finally {                                //please let me know
+			thePlayer.shoot();
 			playerSeeAround();
-			printGrid();
 			resetPlayerSeeAround();
 		}
+	}
+	
+	public boolean ifNinjaPlaceIsEmptyCell(Ninja currNinja){
+		if (currNinja.totallyGotShot()){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	public void fixTheNull(int row, int col){
+		grid[row][col] = new EmptyMember();
 	}
 
 }
